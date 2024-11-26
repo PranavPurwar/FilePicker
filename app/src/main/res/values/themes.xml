@@ -1,0 +1,4 @@
+<resources>
+
+    <style name="Theme.FilePicker" parent="Theme.Material3.DayNight.NoActionBar"></style>
+</resources>
