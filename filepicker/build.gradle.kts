@@ -12,19 +12,13 @@ android {
         minSdk = 21
 
         consumerProguardFiles("consumer-rules.pro")
-
-        aarMetadata {
-            version = "1.0.0"
-            minCompileSdk = 21
-        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -44,18 +38,15 @@ android {
 group = "com.github.PranavPurwar"
 version = "1.0.0"
 
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.PranavPurwar"
+            artifactId = "filepicker"
+            version = "1.0.0"
 
-afterEvaluate {
-    publishing {
-        publications {
-            register<MavenPublication>("release") {
-                groupId = "com.github.PranavPurwar"
-                artifactId = "filepicker"
-                version = "1.0.0"
-
-                afterEvaluate {
-                    from(components["release"])
-                }
+            afterEvaluate {
+                from(components["release"])
             }
         }
     }
