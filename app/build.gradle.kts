@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "dev.pranav.filepicker"
+    namespace = "dev.pranav.filepicker.sample"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "dev.pranav.filepicker"
+        applicationId = "dev.pranav.filepicker.sample"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

@@ -1,13 +1,13 @@
-package dev.pranav.filepicker
+package dev.pranav.filepicker.sample
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import dev.pranav.filepicker.databinding.ActivityMainBinding
+import dev.pranav.filepicker.FilePickerCallback
+import dev.pranav.filepicker.FilePickerDialogFragment
+import dev.pranav.filepicker.FilePickerOptions
+import dev.pranav.filepicker.sample.databinding.ActivityMainBinding
 import java.io.File
 import java.util.Timer
 import java.util.TimerTask
@@ -21,13 +21,6 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        enableEdgeToEdge()
 
         val dialog = FilePickerDialogFragment(
             FilePickerOptions(),
@@ -51,13 +44,5 @@ class MainActivity : AppCompatActivity() {
                 dialog.show(supportFragmentManager, "file_picker")
             }
         }, 1000)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        data?.data?.let { uri ->
-            val path = uri.path
-            Toast.makeText(this, path, Toast.LENGTH_SHORT).show()
-        }
     }
 }
