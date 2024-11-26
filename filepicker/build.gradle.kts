@@ -19,12 +19,6 @@ android {
         }
     }
 
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-        }
-    }
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -47,15 +41,21 @@ android {
     }
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = "dev.pranav.filepicker"
-            artifactId = "filepicker"
-            version = "1.0.0"
+group = "com.github.PranavPurwar"
+version = "1.0.0"
 
-            afterEvaluate {
-                from(components["release"])
+
+afterEvaluate {
+    publishing {
+        publications {
+            register<MavenPublication>("release") {
+                groupId = "com.github.PranavPurwar"
+                artifactId = "filepicker"
+                version = "1.0.0"
+
+                afterEvaluate {
+                    from(components["release"])
+                }
             }
         }
     }
