@@ -35,25 +35,21 @@ android {
     }
 }
 
-group = "com.github.PranavPurwar"
-version = "1.0.0"
-
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = "com.github.PranavPurwar"
-            artifactId = "filepicker"
-            version = "1.0.0"
-
-            afterEvaluate {
-                from(components["release"])
-            }
-        }
-    }
-}
-
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = "com.github.PranavPurwar"
+                artifactId = "filepicker"
+                version = "1.0.0"
+            }
+        }
+    }
 }
