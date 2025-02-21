@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FilePicker</string>
+
+    <string name="pick_a_file">Pick a file</string>
+    <string name="pick_a_folder">Pick a folder</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_file_selected">No file selected</string>
+    <string name="no_folder_selected">No folder selected</string>
+    <string name="select_folder">Select Folder</string>
+    <string name="select_file">Select File</string>
+</resources>
