@@ -2,7 +2,7 @@
 
 A modern, lightweight, and easy-to-use file picker library for Android applications.
 
-[![](https://jitpack.io/v/dev.pranav/FilePicker.svg)](https://jitpack.io/#dev.pranav/FilePicker)
+[![](https://jitpack.io/v/PranavPurwar/FilePicker.svg)](https://jitpack.io/#PranavPurwar/FilePicker)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://www.android.com)
 
