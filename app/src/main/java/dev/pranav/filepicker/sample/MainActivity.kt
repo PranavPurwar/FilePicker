@@ -1,7 +1,6 @@
 package dev.pranav.filepicker.sample
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import dev.pranav.filepicker.FilePickerCallback
@@ -9,8 +8,6 @@ import dev.pranav.filepicker.FilePickerDialogFragment
 import dev.pranav.filepicker.FilePickerOptions
 import dev.pranav.filepicker.sample.databinding.ActivityMainBinding
 import java.io.File
-import java.util.Timer
-import java.util.TimerTask
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,26 +20,27 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val dialog = FilePickerDialogFragment(
-            FilePickerOptions(),
+            FilePickerOptions().apply {
+                title = "Pick a zip file"
+                selectFolder = false
+                extensions = arrayOf("zip", "rar", "tar", "gz")
+            },
             object : FilePickerCallback() {
                 override fun onFileSelected(f: File) {
                     super.onFileSelected(f)
-                    Toast.makeText(this@MainActivity, f.absolutePath, Toast.LENGTH_SHORT).show()
+                    binding.textView.text = f.absolutePath
                 }
 
                 override fun onFileSelectionCancelled(): Boolean {
                     super.onFileSelectionCancelled()
-                    Toast.makeText(this@MainActivity, "Selection canceled", Toast.LENGTH_SHORT)
-                        .show()
+                    binding.textView.text = "Selection canceled"
                     return super.onFileSelectionCancelled()
                 }
             }
         )
 
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                dialog.show(supportFragmentManager, "file_picker")
-            }
-        }, 1000)
+        binding.pickFileButton.setOnClickListener {
+            dialog.show(supportFragmentManager, "file_picker")
+        }
     }
 }

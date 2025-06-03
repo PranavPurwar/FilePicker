@@ -20,4 +20,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "FilePicker"
+include(":app")
 include(":filepicker")

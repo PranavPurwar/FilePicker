@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -33,6 +34,7 @@ import java.util.Locale
 class FilePickerOptions {
     var selectFolder = false
     var extensions = emptyArray<String>()
+    var title: String? = null
 }
 
 open class FilePickerCallback {
@@ -75,7 +77,8 @@ class FilePickerDialogFragment(
         }
 
         binding.toolbar.title =
-            if (options.selectFolder) getString(R.string.select_folder) else getString(R.string.select_file)
+            options.title
+                ?: if (options.selectFolder) getString(R.string.select_folder) else getString(R.string.select_file)
 
         binding.select.setOnClickListener {
             val selectedFile = (binding.files.adapter as FileAdapter).getSelectedFile()
@@ -125,7 +128,6 @@ class FilePickerDialogFragment(
             ViewGroup.LayoutParams.MATCH_PARENT
         )
 
-        // For edge-to-edge display, make the dialog fullscreen and transparent
         WindowCompat.setDecorFitsSystemWindows(dialog?.window!!, false)
 
         val windowController =
@@ -159,7 +161,7 @@ class FilePickerDialogFragment(
                 startActivity(
                     Intent(
                         Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                        Uri.parse("package:${requireContext().packageName}")
+                        "package:${requireContext().packageName}".toUri()
                     )
                 )
             } catch (_: Exception) {
@@ -185,7 +187,7 @@ class FilePickerDialogFragment(
             if (options.selectFolder) {
                 file.isDirectory
             } else {
-                if (options.extensions.isEmpty()) true else options.extensions.any { file.extension == it }
+                if (options.extensions.isEmpty() || file.isDirectory) true else options.extensions.any { file.extension == it }
             }
         }.sortedBy { it.name }.sortedByDescending { it.isDirectory }
     }
