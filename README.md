@@ -6,12 +6,6 @@ A modern, lightweight, and easy-to-use file picker library for Android applicati
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://www.android.com)
 
-<div align="center">
-  <img src="screenshots/1.webp" width="30%" alt="Screenshot 1"/>
-  <img src="screenshots/2.webp" width="30%" alt="Screenshot 2"/>
-  <img src="screenshots/3.webp" width="30%" alt="Screenshot 3"/>
-</div>
-
 ## Features
 
 - 🔍 **Easy File Browsing**: Navigate through device storage with a clean, intuitive interface
@@ -21,6 +15,14 @@ A modern, lightweight, and easy-to-use file picker library for Android applicati
 - 🔒 **Permission Handling**: Automatic handling of storage permission requests
 - 🎨 **Customizable**: Easily customize the appearance to match your app's theme
 - 📱 **Edge-to-Edge Support**: Full support for modern Android edge-to-edge displays
+
+## Screenshots
+
+<div align="center">
+  <img src="screenshots/1.png" width="24%" alt="Screenshot 1"/>
+  <img src="screenshots/2.png" width="24%" alt="Screenshot 2"/>
+  <img src="screenshots/3.png" width="24%" alt="Screenshot 3"/>
+</div>
 
 ## Installation
 
