@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
+    android:focusable="true"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="8dp">
@@ -15,6 +17,7 @@
         android:layout_height="32dp"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="8dp"
+        android:contentDescription="@string/select_file"
         app:srcCompat="@drawable/outline_folder_24"
         app:tint="?colorPrimary" />
 
@@ -28,16 +31,17 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="backup.txt"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
+            tools:text="backup.txt" />
 
         <TextView
             android:id="@+id/details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="24-11-23 23:05 1.2 MB"
+            android:textSize="10sp"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            android:textSize="8sp" />
+            tools:ignore="SmallSp"
+            tools:text="24-11-23 23:05 1.2 MB" />
 
     </LinearLayout>
 
@@ -46,8 +50,6 @@
         style="@style/Widget.Material3.CompoundButton.CheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="0dp"
         android:visibility="gone" />
-
 
 </LinearLayout>

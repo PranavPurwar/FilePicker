@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.FilePicker.Dialog" parent="Theme.Material3.DayNight.Dialog">
+    <style name="Theme.FilePicker.Dialog" parent="ThemeOverlay.Material3Expressive.Dialog">
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">?colorSurface</item>
         <item name="actionMenuTextColor">?colorAccent</item>

@@ -3,7 +3,6 @@ package dev.pranav.filepicker
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -35,10 +34,12 @@ class FilePickerOptions {
     var selectFolder = false
     var extensions = emptyArray<String>()
     var title: String? = null
+    var multipleSelection = false
 }
 
 open class FilePickerCallback {
     open fun onFileSelected(f: File) = Unit
+    open fun onFilesSelected(files: List<File>) = Unit
     open fun onFileSelectionCancelled() = true
 }
 
@@ -81,8 +82,8 @@ class FilePickerDialogFragment(
                 ?: if (options.selectFolder) getString(R.string.select_folder) else getString(R.string.select_file)
 
         binding.select.setOnClickListener {
-            val selectedFile = (binding.files.adapter as FileAdapter).getSelectedFile()
-            if (selectedFile == null) {
+            val selectedFiles = (binding.files.adapter as FileAdapter).getSelectedFiles()
+            if (selectedFiles.isEmpty()) {
                 Toast.makeText(
                     requireContext(),
                     if (options.selectFolder) getString(R.string.no_folder_selected) else getString(
@@ -93,10 +94,12 @@ class FilePickerDialogFragment(
                 return@setOnClickListener
             }
 
-            val data = Intent()
-            data.data = Uri.fromFile(selectedFile)
             dismiss()
-            callback.onFileSelected(selectedFile)
+            if (options.multipleSelection) {
+                callback.onFilesSelected(selectedFiles)
+            } else {
+                callback.onFileSelected(selectedFiles.first())
+            }
         }
 
         val files = listFiles(Environment.getExternalStorageDirectory())
@@ -194,17 +197,18 @@ class FilePickerDialogFragment(
 
     private inner class FileAdapter : RecyclerView.Adapter<FileAdapter.FileViewHolder>() {
         private val files = mutableListOf<File>()
-        private var selectedFile: File? = null
+        private val selectedFiles: MutableList<File> = mutableListOf()
 
-        // Keep track of bound ViewHolders
-        private val boundViewHolders = mutableSetOf<FileViewHolder>()
+        private val visibleViewHolders = mutableSetOf<FileViewHolder>()
 
         @SuppressLint("NotifyDataSetChanged")
         fun setFiles(root: File, files: List<File>) {
             this.files.clear()
             this.files.add(root)
             this.files.addAll(files)
-            selectedFile = null
+            if (!options.multipleSelection) {
+                selectedFiles.clear()
+            }
             notifyDataSetChanged()
         }
 
@@ -215,7 +219,7 @@ class FilePickerDialogFragment(
         }
 
         override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
-            boundViewHolders.add(holder)
+            visibleViewHolders.add(holder)
             if (position == 0) {
                 holder.bind(files[0], true)
             } else holder.bind(files[position])
@@ -223,7 +227,7 @@ class FilePickerDialogFragment(
 
         override fun onViewRecycled(holder: FileViewHolder) {
             super.onViewRecycled(holder)
-            boundViewHolders.remove(holder)
+            visibleViewHolders.remove(holder)
         }
 
         override fun getItemCount(): Int = files.size
@@ -301,13 +305,13 @@ class FilePickerDialogFragment(
                     }
 
                     binding.checkbox.setOnCheckedChangeListener(null)
-                    binding.checkbox.isChecked = file == selectedFile
+                    binding.checkbox.isChecked = (file in selectedFiles)
 
                     binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
                         if (isChecked) {
                             updateSelection(file)
-                        } else if (file == selectedFile) {
-                            updateSelection(null)
+                        } else if (file in selectedFiles) {
+                            updateSelection(file)
                         }
                     }
                 }
@@ -316,21 +320,28 @@ class FilePickerDialogFragment(
             fun updateCheckboxState() {
                 currentFile?.let { file ->
                     binding.checkbox.setOnCheckedChangeListener(null)
-                    binding.checkbox.isChecked = file == selectedFile
+                    binding.checkbox.isChecked = file in selectedFiles
                     binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
                         if (isChecked) {
                             updateSelection(file)
-                        } else if (file == selectedFile) {
-                            updateSelection(null)
+                        } else if (file in selectedFiles) {
+                            updateSelection(file)
                         }
                     }
                 }
             }
         }
 
-        private fun updateSelection(newSelection: File?) {
-            selectedFile = newSelection
-            boundViewHolders.forEach { holder ->
+        private fun updateSelection(newSelection: File) {
+            if (!options.multipleSelection) {
+                selectedFiles.clear()
+            }
+            if (newSelection in selectedFiles) {
+                selectedFiles.remove(newSelection)
+            } else {
+                selectedFiles.add(newSelection)
+            }
+            visibleViewHolders.forEach { holder ->
                 holder.updateCheckboxState()
             }
         }
@@ -347,6 +358,6 @@ class FilePickerDialogFragment(
             return String.format(Locale.getDefault(), "%.2f %s", sizeD, units[unit])
         }
 
-        fun getSelectedFile(): File? = selectedFile
+        fun getSelectedFiles(): List<File> = selectedFiles
     }
 }

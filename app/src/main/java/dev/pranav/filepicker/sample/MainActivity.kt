@@ -31,6 +31,11 @@ class MainActivity : AppCompatActivity() {
                     binding.textView.text = f.absolutePath
                 }
 
+                override fun onFilesSelected(files: List<File>) {
+                    super.onFilesSelected(files)
+                    binding.textView.text = files.joinToString("\n") { it.absolutePath }
+                }
+
                 override fun onFileSelectionCancelled(): Boolean {
                     super.onFileSelectionCancelled()
                     binding.textView.text = "Selection canceled"

@@ -10,12 +10,13 @@ A modern, lightweight, and easy-to-use file picker library for Android applicati
 
 - 🔍 **Easy File Browsing**: Navigate through device storage with a clean, intuitive interface
 - 📁 **Folder Selection**: Select folders or individual files based on your needs
+- 🗂️ **Multiple Selection**: Choose multiple files or folders at once
 - 🔧 **File Filtering**: Filter files by extension to show only relevant content
-- 🧩 **Material Design**: Modern UI consistent with Material Design guidelines
+- 🧩 **Material Expressive Design**: Modern UI consistent with Material Design guidelines
 - 🔒 **Permission Handling**: Automatic handling of storage permission requests
 - 🎨 **Customizable**: Easily customize the appearance to match your app's theme
 - 📱 **Edge-to-Edge Support**: Full support for modern Android edge-to-edge displays
-
+- 📦 **Lightweight**: Minimal dependencies and small APK size
 ## Screenshots
 
 <div align="center">
@@ -78,6 +79,9 @@ val options = FilePickerOptions().apply {
 
     // Optional: Filter files by extension
     extensions = arrayOf("pdf", "doc", "txt")
+    
+    // Optional: Single selection mode
+    multipleSelection = false
 }
 
 // Create callback to handle selection
@@ -123,6 +127,14 @@ val options = FilePickerOptions().apply {
 }
 ```
 
+### Multiple Selection
+
+```kotlin
+val options = FilePickerOptions().apply {
+    multipleSelection = true // Allow selecting multiple files
+}
+```
+
 ## Permissions
 
 FilePicker automatically handles requesting the necessary storage permissions:
@@ -137,8 +149,7 @@ Make sure to add these permissions to your AndroidManifest.xml:
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <!-- For Android 11 and above -->
-<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-tools:ignore="ScopedStorage" />
+<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 ```
 
 ## Customization
@@ -148,7 +159,7 @@ theme:
 
 ```xml
 
-<style name="Theme.FilePicker.Dialog" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+<style name="Theme.FilePicker.Dialog" parent="@style/Theme.Material3Expressive.DynamicColors.DayNight">
     <!-- Override colors and styles here -->
     <item name="colorPrimary">@color/your_primary_color</item>
     <item name="colorOnPrimary">@color/your_on_primary_color</item>
@@ -203,7 +214,7 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 ## About
 
-Created with ❤️ by [Pranav](https://github.com/username)
+Created with ❤️ by [Pranav](https://github.com/PranavPurwar).
 
 ## Donate
 

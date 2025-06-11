@@ -35,19 +35,17 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/cancel"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Material3Expressive.Button.ElevatedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:text="@string/cancel"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Large" />
+            android:text="@string/cancel" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/select"
-            style="@style/Widget.Material3.Button.TonalButton"
+            style="@style/Widget.Material3Expressive.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Large"
             tools:text="Select Folder" />
 
     </LinearLayout>
