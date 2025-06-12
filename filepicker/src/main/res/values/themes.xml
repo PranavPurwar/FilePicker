@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.FilePicker.Dialog" parent="ThemeOverlay.Material3Expressive.Dialog">
+    <style name="Base.Theme.FilePicker.Dialog" parent="ThemeOverlay.Material3Expressive.Dialog">
+        <item name="filePickerBackgroundColor">?attr/colorSurfaceContainer</item>
+        <item name="filePickerSurfaceColor">?attr/colorSurfaceContainerLowest</item>
+    </style>
+
+    <style name="Theme.FilePicker.Dialog" parent="Base.Theme.FilePicker.Dialog">
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">?colorSurface</item>
         <item name="actionMenuTextColor">?colorAccent</item>

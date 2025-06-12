@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Base.Theme.FilePicker.Dialog" parent="ThemeOverlay.Material3Expressive.Dialog">
+        <item name="filePickerBackgroundColor">?attr/colorSurfaceContainerLowest</item>
+        <item name="filePickerSurfaceColor">?attr/colorSurfaceContainer</item>
+    </style>
+</resources>
