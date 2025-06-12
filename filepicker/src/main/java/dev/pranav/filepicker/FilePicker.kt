@@ -336,11 +336,7 @@ class FilePickerDialogFragment(
                         binding.folderIconContainer.isVisible = false
                         binding.fileIcon.isVisible = true
                     }
-                    binding.fileIcon.imageTintList = ColorStateList.valueOf(
-                        MaterialColors.getColor(
-                            binding.root, androidx.appcompat.R.attr.colorPrimary
-                        )
-                    )
+
                     binding.name.text = file.name
                     binding.details.text = SimpleDateFormat(
                         "dd-mm-yyyy", Locale.getDefault()
