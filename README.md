@@ -53,7 +53,7 @@ repositories {
 
 ```gradle
 dependencies {
-    implementation 'com.github.PranavPurwar:filepicker:eb0d77f1d0'
+    implementation 'com.github.PranavPurwar:filepicker:869c18f9e4'
 }
 ```
 
@@ -61,7 +61,7 @@ Or for Gradle Kotlin DSL:
 
 ```kotlin
 dependencies {
-    implementation("com.github.PranavPurwar:filepicker:eb0d77f1d0")
+    implementation("com.github.PranavPurwar:filepicker:869c18f9e4")
 }
 ```
 

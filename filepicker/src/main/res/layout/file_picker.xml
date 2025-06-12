@@ -63,23 +63,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
+                android:gravity="end"
                 android:paddingVertical="8dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/cancel"
-                    style="@style/Widget.Material3Expressive.Button.TonalButton"
-                    android:layout_width="0dp"
+                    style="@style/Widget.Material3Expressive.Button.TextButton"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:layout_weight="1"
                     android:text="@string/cancel" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/select"
-                    style="@style/Widget.Material3Expressive.Button"
-                    android:layout_width="0dp"
+                    style="@style/Widget.Material3Expressive.Button.TonalButton"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                     tools:text="@string/select_items" />
 
             </LinearLayout>

@@ -3,7 +3,7 @@ package dev.pranav.filepicker
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
-import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -309,8 +309,7 @@ class FilePickerDialogFragment(
                         itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
                     }
 
-                    binding.folderIconContainer.isVisible = true
-                    binding.fileIcon.isVisible = false
+                    binding.iconContainer.isVisible = true
 
                     binding.name.text = ".."
                     binding.details.text = "Parent Directory"
@@ -330,11 +329,16 @@ class FilePickerDialogFragment(
                     }
                 } else {
                     if (file.isDirectory) {
-                        binding.folderIconContainer.isVisible = true
-                        binding.fileIcon.isVisible = false
+                        binding.iconContainer.setCardBackgroundColor(
+                            MaterialColors.getColor(
+                                binding.iconContainer,
+                                com.google.android.material.R.attr.colorSurfaceContainerHigh
+                            )
+                        )
+                        binding.icon.setImageResource(R.drawable.outline_folder_24)
                     } else {
-                        binding.folderIconContainer.isVisible = false
-                        binding.fileIcon.isVisible = true
+                        binding.iconContainer.setCardBackgroundColor(Color.TRANSPARENT)
+                        binding.icon.setImageResource(R.drawable.outline_insert_drive_file_24)
                     }
 
                     binding.name.text = file.name
