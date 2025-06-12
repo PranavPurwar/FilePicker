@@ -12,7 +12,6 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -20,6 +19,7 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
@@ -152,7 +152,7 @@ class FilePickerDialogFragment(
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding.toolbar.updatePadding(top = systemBars.top)
+            binding.appBarLayout.updatePadding(top = systemBars.top)
             binding.root.updatePadding(
                 bottom = systemBars.bottom,
                 left = systemBars.left,
@@ -300,15 +300,17 @@ class FilePickerDialogFragment(
                 currentFile = file
 
                 if (up) {
-                    binding.icon.setImageResource(R.drawable.outline_folder_24)
+                    if (file.parentFile?.canRead() != true) {
+                        // changing view visibility doesn't work lol
+                        itemView.isVisible = false
+                        itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
+                    }
+
+                    binding.folderIconContainer.isVisible = true
+                    binding.fileIcon.isVisible = false
+
                     binding.name.text = ".."
                     binding.details.text = "Parent Directory"
-                    binding.icon.imageTintList = ColorStateList.valueOf(
-                        MaterialColors.getColor(
-                            binding.root,
-                            androidx.appcompat.R.attr.colorControlNormal
-                        )
-                    )
                     binding.checkbox.visibility = View.GONE
                     binding.root.setOnClickListener {
                         if (file.parentFile?.canRead() != true) {
@@ -324,11 +326,16 @@ class FilePickerDialogFragment(
                         setFiles(parentDir, listFiles(parentDir))
                     }
                 } else {
-                    binding.icon.setImageResource(if (file.isDirectory) R.drawable.outline_folder_24 else R.drawable.outline_insert_drive_file_24)
-                    binding.icon.imageTintList = ColorStateList.valueOf(
+                    if (file.isDirectory) {
+                        binding.folderIconContainer.isVisible = true
+                        binding.fileIcon.isVisible = false
+                    } else {
+                        binding.folderIconContainer.isVisible = false
+                        binding.fileIcon.isVisible = true
+                    }
+                    binding.fileIcon.imageTintList = ColorStateList.valueOf(
                         MaterialColors.getColor(
-                            binding.root,
-                            androidx.appcompat.R.attr.colorPrimary
+                            binding.root, androidx.appcompat.R.attr.colorPrimary
                         )
                     )
                     binding.name.text = file.name
