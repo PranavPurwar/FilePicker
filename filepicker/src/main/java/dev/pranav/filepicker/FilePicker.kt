@@ -22,11 +22,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.divider.MaterialDividerItemDecoration
-import com.google.android.material.transition.MaterialFadeThrough
 import dev.pranav.filepicker.databinding.FilePickerBinding
 import dev.pranav.filepicker.databinding.ItemFileBinding
 import java.io.File
@@ -45,7 +42,7 @@ class FilePickerDialogFragment(
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FilePickerBinding.inflate(inflater, container, false)
 
         when (options.selectionMode) {
@@ -53,9 +50,6 @@ class FilePickerDialogFragment(
             SelectionMode.BOTH -> binding.select.text = getString(R.string.select_items)
             SelectionMode.FILE -> binding.select.text = getString(R.string.select_file)
         }
-
-        exitTransition = MaterialFadeThrough()
-        enterTransition = MaterialFadeThrough()
 
         requestManageAllFilesPermission()
 
