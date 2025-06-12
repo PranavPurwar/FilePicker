@@ -152,11 +152,6 @@ class FilePickerDialogFragment(
 
         WindowCompat.setDecorFitsSystemWindows(dialog?.window!!, false)
 
-        val windowController =
-            WindowCompat.getInsetsController(dialog?.window!!, dialog?.window!!.decorView)
-        windowController.isAppearanceLightStatusBars = false
-        windowController.isAppearanceLightNavigationBars = false
-
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding.toolbar.updatePadding(top = systemBars.top)
