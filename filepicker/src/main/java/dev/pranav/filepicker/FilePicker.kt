@@ -12,21 +12,19 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.divider.MaterialDividerItemDecoration
-import com.google.android.material.transition.MaterialFadeThrough
 import dev.pranav.filepicker.databinding.FilePickerBinding
 import dev.pranav.filepicker.databinding.ItemFileBinding
 import java.io.File
@@ -45,7 +43,7 @@ class FilePickerDialogFragment(
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FilePickerBinding.inflate(inflater, container, false)
 
         when (options.selectionMode) {
@@ -53,9 +51,6 @@ class FilePickerDialogFragment(
             SelectionMode.BOTH -> binding.select.text = getString(R.string.select_items)
             SelectionMode.FILE -> binding.select.text = getString(R.string.select_file)
         }
-
-        exitTransition = MaterialFadeThrough()
-        enterTransition = MaterialFadeThrough()
 
         requestManageAllFilesPermission()
 
@@ -71,6 +66,8 @@ class FilePickerDialogFragment(
             }
         }
 
+        binding.toolbar.overflowIcon = ContextCompat.getDrawable(requireContext(), R.drawable.rounded_sort_24)
+
         binding.toolbar.title = options.title ?: when (options.selectionMode) {
             SelectionMode.FOLDER -> getString(R.string.pick_a_folder)
             SelectionMode.BOTH -> getString(R.string.pick_items)
@@ -81,13 +78,11 @@ class FilePickerDialogFragment(
             val selectedFiles = (binding.files.adapter as FileAdapter).getSelectedFiles()
             if (selectedFiles.isEmpty()) {
                 Toast.makeText(
-                    requireContext(),
-                    when (options.selectionMode) {
+                    requireContext(), when (options.selectionMode) {
                         SelectionMode.FOLDER -> getString(R.string.no_folder_selected)
                         SelectionMode.BOTH -> getString(R.string.no_item_selected)
                         SelectionMode.FILE -> getString(R.string.no_file_selected)
-                    },
-                    Toast.LENGTH_SHORT
+                    }, Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
             }
@@ -101,31 +96,44 @@ class FilePickerDialogFragment(
         }
 
         if (options.showSortOption) {
-            binding.sortButton.visibility = View.VISIBLE
-            binding.sortButton.setOnClickListener {
-                showSortingMenu(it)
+            binding.toolbar.inflateMenu(R.menu.sort_menu)
+            binding.toolbar.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.sort_name_asc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.NAME_ASC
+                    }
+                    R.id.sort_name_desc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.NAME_DESC
+                    }
+                    R.id.sort_size_asc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.SIZE_ASC
+                    }
+                    R.id.sort_size_desc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.SIZE_DESC
+                    }
+                    R.id.sort_date_asc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.DATE_MODIFIED_ASC
+                    }
+                    R.id.sort_date_desc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.DATE_MODIFIED_DESC
+                    }
+                    else -> options.sortBy = SortBy.NAME_ASC
+                }
+                refreshFiles()
+                true
             }
-        } else {
-            binding.sortButton.visibility = View.GONE
         }
 
-        val files = listFiles(currentDirectory)
-        val adapter = FileAdapter()
-
-        binding.files.addItemDecoration(
-            MaterialDividerItemDecoration(
-                requireContext(),
-                DividerItemDecoration.VERTICAL
-            ).apply {
-                dividerInsetStart = 24
-                dividerInsetEnd = 24
-            }
-        )
-        binding.files.adapter = adapter
-        adapter.setFiles(currentDirectory, files)
+        binding.files.adapter =
+            FileAdapter().apply { setFiles(currentDirectory, listFiles(currentDirectory)) }
 
         isCancelable = false
-
         return binding.root
     }
 
@@ -145,14 +153,9 @@ class FilePickerDialogFragment(
 
         WindowCompat.setDecorFitsSystemWindows(dialog?.window!!, false)
 
-        val windowController =
-            WindowCompat.getInsetsController(dialog?.window!!, dialog?.window!!.decorView)
-        windowController.isAppearanceLightStatusBars = false
-        windowController.isAppearanceLightNavigationBars = false
-
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding.toolbar.updatePadding(top = systemBars.top)
+            binding.appBarLayout.updatePadding(top = systemBars.top)
             binding.root.updatePadding(
                 bottom = systemBars.bottom,
                 left = systemBars.left,
@@ -164,15 +167,11 @@ class FilePickerDialogFragment(
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.setOnKeyListener { dialog, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK
-                && event.action == KeyEvent.ACTION_UP
-            ) {
+        dialog.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                 if (currentDirectory.parentFile?.canRead() != true) {
                     Toast.makeText(
-                        requireContext(),
-                        "Cannot read parent directory",
-                        Toast.LENGTH_SHORT
+                        requireContext(), "Cannot read parent directory", Toast.LENGTH_SHORT
                     ).show()
                 } else {
                     val parentDir = currentDirectory.parentFile ?: return@setOnKeyListener false
@@ -209,14 +208,11 @@ class FilePickerDialogFragment(
             }
         } else {
             if (ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                    requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE
                 ) == android.content.pm.PackageManager.PERMISSION_GRANTED
             ) return
             ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                0
+                requireActivity(), arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 0
             )
         }
     }
@@ -254,33 +250,6 @@ class FilePickerDialogFragment(
         )
     }
 
-    private fun showSortingMenu(view: View) {
-        val popupMenu = PopupMenu(requireContext(), view)
-        popupMenu.menuInflater.inflate(R.menu.sort_menu, popupMenu.menu)
-
-        popupMenu.setOnMenuItemClickListener { menuItem ->
-            options.sortBy = when (menuItem.itemId) {
-                R.id.sort_name_asc -> SortBy.NAME_ASC
-
-                R.id.sort_name_desc -> SortBy.NAME_DESC
-
-                R.id.sort_size_asc -> SortBy.SIZE_ASC
-
-                R.id.sort_size_desc -> SortBy.SIZE_DESC
-
-                R.id.sort_date_asc -> SortBy.DATE_MODIFIED_ASC
-
-                R.id.sort_date_desc -> SortBy.DATE_MODIFIED_DESC
-
-                else -> SortBy.NAME_ASC
-            }
-            refreshFiles()
-            return@setOnMenuItemClickListener true
-        }
-
-        popupMenu.show()
-    }
-
     private fun refreshFiles() {
         val files = listFiles(currentDirectory)
         (binding.files.adapter as FileAdapter).setFiles(currentDirectory, files)
@@ -300,6 +269,7 @@ class FilePickerDialogFragment(
             if (!options.multipleSelection) {
                 selectedFiles.clear()
             }
+            binding.toolbar.subtitle = currentDirectory.absolutePath
             notifyDataSetChanged()
         }
 
@@ -333,15 +303,17 @@ class FilePickerDialogFragment(
                 currentFile = file
 
                 if (up) {
-                    binding.icon.setImageResource(R.drawable.outline_folder_24)
+                    if (file.parentFile?.canRead() != true) {
+                        // changing view visibility doesn't work lol
+                        itemView.isVisible = false
+                        itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
+                    }
+
+                    binding.folderIconContainer.isVisible = true
+                    binding.fileIcon.isVisible = false
+
                     binding.name.text = ".."
                     binding.details.text = "Parent Directory"
-                    binding.icon.imageTintList = ColorStateList.valueOf(
-                        MaterialColors.getColor(
-                            binding.root,
-                            androidx.appcompat.R.attr.colorControlNormal
-                        )
-                    )
                     binding.checkbox.visibility = View.GONE
                     binding.root.setOnClickListener {
                         if (file.parentFile?.canRead() != true) {
@@ -357,21 +329,21 @@ class FilePickerDialogFragment(
                         setFiles(parentDir, listFiles(parentDir))
                     }
                 } else {
-                    binding.icon.setImageResource(if (file.isDirectory) R.drawable.outline_folder_24 else R.drawable.outline_insert_drive_file_24)
-                    binding.icon.imageTintList = ColorStateList.valueOf(
-                        MaterialColors.getColor(
-                            binding.root,
-                            androidx.appcompat.R.attr.colorPrimary
-                        )
-                    )
+                    if (file.isDirectory) {
+                        binding.folderIconContainer.isVisible = true
+                        binding.fileIcon.isVisible = false
+                    } else {
+                        binding.folderIconContainer.isVisible = false
+                        binding.fileIcon.isVisible = true
+                    }
+
                     binding.name.text = file.name
-                    binding.details.text =
-                        SimpleDateFormat(
-                            "dd-mm-yyyy",
-                            Locale.getDefault()
-                        ).format(Date(file.lastModified())) + " | " + getSize(
-                            file
-                        )
+                    binding.details.text = SimpleDateFormat(
+                        "dd-mm-yyyy", Locale.getDefault()
+                    ).format(Date(file.lastModified()))
+
+                    if (file.isFile) binding.details.text =
+                        binding.details.text.toString() + " | " + getSize(file)
 
                     // Set checkbox visibility based on selection mode
                     when (options.selectionMode) {

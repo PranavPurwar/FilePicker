@@ -4,26 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
+    android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="12dp">
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
+
+    <FrameLayout
+        android:id="@+id/folder_icon_container"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/folder_bg">
+
+        <ImageView
+            android:id="@+id/folder_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/select_file"
+            app:srcCompat="@drawable/outline_folder_24" />
+    </FrameLayout>
 
     <ImageView
-        android:id="@+id/icon"
+        android:id="@+id/file_icon"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginEnd="8dp"
         android:contentDescription="@string/select_file"
-        app:srcCompat="@drawable/outline_folder_24"
-        app:tint="?colorPrimary" />
+        android:padding="4dp"
+        app:srcCompat="@drawable/outline_insert_drive_file_24"
+        app:tint="?attr/colorPrimary" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -31,17 +48,19 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
             android:ellipsize="end"
             android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="17sp"
             tools:text="backup.txt" />
 
         <TextView
             android:id="@+id/details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?android:attr/textColorSecondary"
             tools:ignore="SmallSp"
             tools:text="24-11-23 23:05 1.2 MB" />
 
@@ -52,6 +71,7 @@
         style="@style/Widget.Material3.CompoundButton.CheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible" />
 
 </LinearLayout>
