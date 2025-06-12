@@ -340,13 +340,12 @@ class FilePickerDialogFragment(
                         )
                     )
                     binding.name.text = file.name
-                    binding.details.text =
-                        SimpleDateFormat(
-                            "dd-mm-yyyy",
-                            Locale.getDefault()
-                        ).format(Date(file.lastModified())) + " | " + getSize(
-                            file
-                        )
+                    binding.details.text = SimpleDateFormat(
+                        "dd-mm-yyyy", Locale.getDefault()
+                    ).format(Date(file.lastModified()))
+
+                    if (file.isFile) binding.details.text =
+                        binding.details.text.toString() + " | " + getSize(file)
 
                     // Set checkbox visibility based on selection mode
                     when (options.selectionMode) {
