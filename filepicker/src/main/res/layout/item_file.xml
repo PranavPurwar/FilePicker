@@ -9,7 +9,7 @@
     android:focusable="true"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="12dp">
 
     <ImageView
         android:id="@+id/icon"
@@ -32,6 +32,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
+            android:ellipsize="end"
+            android:maxLines="2"
             tools:text="backup.txt" />
 
         <TextView

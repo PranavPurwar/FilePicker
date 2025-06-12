@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import dev.pranav.filepicker.FilePickerCallback
 import dev.pranav.filepicker.FilePickerDialogFragment
 import dev.pranav.filepicker.FilePickerOptions
+import dev.pranav.filepicker.SelectionMode
 import dev.pranav.filepicker.sample.databinding.ActivityMainBinding
 import java.io.File
 
@@ -20,15 +21,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val dialog = FilePickerDialogFragment(
-            FilePickerOptions().apply {
-                title = "Pick a zip file"
-                selectFolder = false
-                extensions = arrayOf("zip", "rar", "tar", "gz")
-            },
+            FilePickerOptions()
+                .setSelectionMode(SelectionMode.BOTH)
+                .setExtensions(arrayOf("jpg", "png", "pdf", "txt"))
+                .setTitle("Select Files")
+                .setInitialDirectory("/storage/emulated/0/Download")
+                .setMultipleSelection(true)
+                .setShowSortOption(true),
             object : FilePickerCallback() {
-                override fun onFileSelected(f: File) {
-                    super.onFileSelected(f)
-                    binding.textView.text = f.absolutePath
+                override fun onFileSelected(file: File) {
+                    super.onFileSelected(file)
+                    binding.textView.text = file.absolutePath
                 }
 
                 override fun onFilesSelected(files: List<File>) {

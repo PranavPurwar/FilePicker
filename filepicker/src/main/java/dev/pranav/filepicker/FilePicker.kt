@@ -1,15 +1,18 @@
 package dev.pranav.filepicker
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -22,6 +25,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.transition.MaterialFadeThrough
 import dev.pranav.filepicker.databinding.FilePickerBinding
 import dev.pranav.filepicker.databinding.ItemFileBinding
@@ -30,34 +34,24 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class FilePickerOptions {
-    var selectFolder = false
-    var extensions = emptyArray<String>()
-    var title: String? = null
-    var multipleSelection = false
-}
-
-open class FilePickerCallback {
-    open fun onFileSelected(f: File) = Unit
-    open fun onFilesSelected(files: List<File>) = Unit
-    open fun onFileSelectionCancelled() = true
-}
-
 class FilePickerDialogFragment(
     val options: FilePickerOptions,
     val callback: FilePickerCallback = FilePickerCallback()
 ) : DialogFragment() {
     private lateinit var binding: FilePickerBinding
 
+    private var currentDirectory: File =
+        if (options.initialDirectory != null) File(options.initialDirectory!!) else Environment.getExternalStorageDirectory()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         binding = FilePickerBinding.inflate(inflater, container, false)
 
-        if (options.selectFolder) {
-            binding.select.text = getString(R.string.select_folder)
-        } else {
-            binding.select.text = getString(R.string.select_file)
+        when (options.selectionMode) {
+            SelectionMode.FOLDER -> binding.select.text = getString(R.string.select_folder)
+            SelectionMode.BOTH -> binding.select.text = getString(R.string.select_items)
+            SelectionMode.FILE -> binding.select.text = getString(R.string.select_file)
         }
 
         exitTransition = MaterialFadeThrough()
@@ -77,18 +71,22 @@ class FilePickerDialogFragment(
             }
         }
 
-        binding.toolbar.title =
-            options.title
-                ?: if (options.selectFolder) getString(R.string.select_folder) else getString(R.string.select_file)
+        binding.toolbar.title = options.title ?: when (options.selectionMode) {
+            SelectionMode.FOLDER -> getString(R.string.pick_a_folder)
+            SelectionMode.BOTH -> getString(R.string.pick_items)
+            SelectionMode.FILE -> getString(R.string.pick_a_file)
+        }
 
         binding.select.setOnClickListener {
             val selectedFiles = (binding.files.adapter as FileAdapter).getSelectedFiles()
             if (selectedFiles.isEmpty()) {
                 Toast.makeText(
                     requireContext(),
-                    if (options.selectFolder) getString(R.string.no_folder_selected) else getString(
-                        R.string.no_file_selected
-                    ),
+                    when (options.selectionMode) {
+                        SelectionMode.FOLDER -> getString(R.string.no_folder_selected)
+                        SelectionMode.BOTH -> getString(R.string.no_item_selected)
+                        SelectionMode.FILE -> getString(R.string.no_file_selected)
+                    },
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
@@ -102,17 +100,31 @@ class FilePickerDialogFragment(
             }
         }
 
-        val files = listFiles(Environment.getExternalStorageDirectory())
+        if (options.showSortOption) {
+            binding.sortButton.visibility = View.VISIBLE
+            binding.sortButton.setOnClickListener {
+                showSortingMenu(it)
+            }
+        } else {
+            binding.sortButton.visibility = View.GONE
+        }
+
+        val files = listFiles(currentDirectory)
         val adapter = FileAdapter()
 
         binding.files.addItemDecoration(
-            DividerItemDecoration(
+            MaterialDividerItemDecoration(
                 requireContext(),
                 DividerItemDecoration.VERTICAL
-            )
+            ).apply {
+                dividerInsetStart = 24
+                dividerInsetEnd = 24
+            }
         )
         binding.files.adapter = adapter
-        adapter.setFiles(Environment.getExternalStorageDirectory(), files)
+        adapter.setFiles(currentDirectory, files)
+
+        isCancelable = false
 
         return binding.root
     }
@@ -150,11 +162,35 @@ class FilePickerDialogFragment(
         }
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.setOnKeyListener { dialog, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK
+                && event.action == KeyEvent.ACTION_UP
+            ) {
+                if (currentDirectory.parentFile?.canRead() != true) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Cannot read parent directory",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    val parentDir = currentDirectory.parentFile ?: return@setOnKeyListener false
+                    currentDirectory = parentDir
+                    (binding.files.adapter as FileAdapter).setFiles(parentDir, listFiles(parentDir))
+                }
+                return@setOnKeyListener true
+            }
+            return@setOnKeyListener false
+        }
+        return dialog
+    }
+
     override fun onResume() {
         super.onResume()
-        val files = listFiles(Environment.getExternalStorageDirectory())
+        val files = listFiles(currentDirectory)
         val adapter = binding.files.adapter as FileAdapter
-        adapter.setFiles(Environment.getExternalStorageDirectory(), files)
+        adapter.setFiles(currentDirectory, files)
     }
 
     private fun requestManageAllFilesPermission() {
@@ -186,13 +222,90 @@ class FilePickerDialogFragment(
     }
 
     private fun listFiles(root: File): List<File> {
-        return (root.listFiles()?.toList() ?: emptyList()).filter { file ->
-            if (options.selectFolder) {
-                file.isDirectory
-            } else {
-                if (options.extensions.isEmpty() || file.isDirectory) true else options.extensions.any { file.extension == it }
+        val filteredFiles = (root.listFiles()?.toList() ?: emptyList()).filter { file ->
+            when (options.selectionMode) {
+                SelectionMode.FOLDER -> file.isDirectory
+                SelectionMode.BOTH -> {
+                    // When selecting both, show all files that match extensions (or all if no extensions specified)
+                    if (options.extensions.isEmpty()) true
+                    else if (file.isDirectory) true
+                    else options.extensions.any { file.extension == it }
+                }
+
+                SelectionMode.FILE -> {
+                    // Default file-only selection behavior
+                    if (options.extensions.isEmpty() || file.isDirectory) true
+                    else options.extensions.any { file.extension == it }
+                }
             }
-        }.sortedBy { it.name }.sortedByDescending { it.isDirectory }
+        }
+
+        return filteredFiles.sortedWith(
+            compareBy<File> { !it.isDirectory }.then(
+                when (options.sortBy) {
+                    SortBy.NAME_ASC -> compareBy { it.name.lowercase(Locale.getDefault()) }
+                    SortBy.NAME_DESC -> compareByDescending { it.name.lowercase(Locale.getDefault()) }
+                    SortBy.SIZE_ASC -> compareBy { it.length() }
+                    SortBy.SIZE_DESC -> compareByDescending { it.length() }
+                    SortBy.DATE_MODIFIED_ASC -> compareBy { it.lastModified() }
+                    SortBy.DATE_MODIFIED_DESC -> compareByDescending { it.lastModified() }
+                }
+            )
+        )
+    }
+
+    private fun showSortingMenu(view: View) {
+        val popupMenu = PopupMenu(requireContext(), view)
+        popupMenu.menuInflater.inflate(R.menu.sort_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.sort_name_asc -> {
+                    options.sortBy = SortBy.NAME_ASC
+                    refreshFiles()
+                    true
+                }
+
+                R.id.sort_name_desc -> {
+                    options.sortBy = SortBy.NAME_DESC
+                    refreshFiles()
+                    true
+                }
+
+                R.id.sort_size_asc -> {
+                    options.sortBy = SortBy.SIZE_ASC
+                    refreshFiles()
+                    true
+                }
+
+                R.id.sort_size_desc -> {
+                    options.sortBy = SortBy.SIZE_DESC
+                    refreshFiles()
+                    true
+                }
+
+                R.id.sort_date_asc -> {
+                    options.sortBy = SortBy.DATE_MODIFIED_ASC
+                    refreshFiles()
+                    true
+                }
+
+                R.id.sort_date_desc -> {
+                    options.sortBy = SortBy.DATE_MODIFIED_DESC
+                    refreshFiles()
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        popupMenu.show()
+    }
+
+    private fun refreshFiles() {
+        val files = listFiles(currentDirectory)
+        (binding.files.adapter as FileAdapter).setFiles(currentDirectory, files)
     }
 
     private inner class FileAdapter : RecyclerView.Adapter<FileAdapter.FileViewHolder>() {
@@ -253,7 +366,7 @@ class FilePickerDialogFragment(
                     )
                     binding.checkbox.visibility = View.GONE
                     binding.root.setOnClickListener {
-                        if (!file.canRead()) {
+                        if (file.parentFile?.canRead() != true) {
                             Toast.makeText(
                                 binding.root.context,
                                 "Cannot read parent directory",
@@ -261,7 +374,9 @@ class FilePickerDialogFragment(
                             ).show()
                             return@setOnClickListener
                         }
-                        setFiles(file.parentFile!!, listFiles(file))
+                        val parentDir = currentDirectory.parentFile ?: return@setOnClickListener
+                        currentDirectory = parentDir
+                        setFiles(parentDir, listFiles(parentDir))
                     }
                 } else {
                     binding.icon.setImageResource(if (file.isDirectory) R.drawable.outline_folder_24 else R.drawable.outline_insert_drive_file_24)
@@ -280,12 +395,24 @@ class FilePickerDialogFragment(
                             file
                         )
 
-                    if (options.selectFolder) {
-                        binding.checkbox.visibility =
-                            if (file.isDirectory) View.VISIBLE else View.GONE
-                    } else {
-                        binding.checkbox.visibility =
-                            if (!file.isDirectory) View.VISIBLE else View.GONE
+                    // Set checkbox visibility based on selection mode
+                    when (options.selectionMode) {
+                        SelectionMode.BOTH -> {
+                            // When selecting both, show checkbox for all items
+                            binding.checkbox.visibility = View.VISIBLE
+                        }
+
+                        SelectionMode.FOLDER -> {
+                            // When selecting folders only, show checkbox only for directories
+                            binding.checkbox.visibility =
+                                if (file.isDirectory) View.VISIBLE else View.GONE
+                        }
+
+                        SelectionMode.FILE -> {
+                            // When selecting files only, show checkbox only for files
+                            binding.checkbox.visibility =
+                                if (!file.isDirectory) View.VISIBLE else View.GONE
+                        }
                     }
 
                     if (file.isDirectory) {
@@ -298,7 +425,8 @@ class FilePickerDialogFragment(
                                 ).show()
                                 return@setOnClickListener
                             }
-                            setFiles(file.parentFile!!, listFiles(file))
+                            currentDirectory = file
+                            setFiles(file, listFiles(file))
                         }
                     } else {
                         binding.root.setOnClickListener {}
@@ -347,7 +475,14 @@ class FilePickerDialogFragment(
         }
 
         private fun getSize(file: File): String {
-            val size = file.length()
+            if (file.isDirectory) {
+                return "Directory"
+            }
+            val size = if (file.isDirectory) {
+                file.walk().sumOf { it.length() }
+            } else {
+                file.length()
+            }
             val units = arrayOf("B", "KiB", "MiB", "GiB", "TiB")
             var unit = 0
             var sizeD = size.toDouble()

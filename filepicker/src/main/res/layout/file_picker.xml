@@ -15,7 +15,18 @@
         android:elevation="0dp"
         android:minHeight="?attr/actionBarSize"
         app:navigationIcon="@drawable/rounded_close_24"
-        app:title="@string/pick_a_file" />
+        app:title="@string/pick_a_file">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sort_button"
+            style="@style/Widget.Material3Expressive.Button.IconButton.Tonal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:contentDescription="Sort files"
+            app:icon="@drawable/rounded_sort_24" />
+
+    </com.google.android.material.appbar.MaterialToolbar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/files"
