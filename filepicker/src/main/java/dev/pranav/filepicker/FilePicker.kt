@@ -275,6 +275,7 @@ class FilePickerDialogFragment(
             if (!options.multipleSelection) {
                 selectedFiles.clear()
             }
+            binding.toolbar.subtitle = currentDirectory.absolutePath
             notifyDataSetChanged()
         }
 
