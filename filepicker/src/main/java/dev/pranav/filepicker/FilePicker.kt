@@ -101,31 +101,44 @@ class FilePickerDialogFragment(
         }
 
         if (options.showSortOption) {
-            binding.sortButton.visibility = View.VISIBLE
-            binding.sortButton.setOnClickListener {
-                showSortingMenu(it)
+            binding.toolbar.inflateMenu(R.menu.sort_menu)
+            binding.toolbar.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.sort_name_asc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.NAME_ASC
+                    }
+                    R.id.sort_name_desc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.NAME_DESC
+                    }
+                    R.id.sort_size_asc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.SIZE_ASC
+                    }
+                    R.id.sort_size_desc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.SIZE_DESC
+                    }
+                    R.id.sort_date_asc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.DATE_MODIFIED_ASC
+                    }
+                    R.id.sort_date_desc -> {
+                        item.isChecked = true
+                        options.sortBy = SortBy.DATE_MODIFIED_DESC
+                    }
+                    else -> options.sortBy = SortBy.NAME_ASC
+                }
+                refreshFiles()
+                true
             }
-        } else {
-            binding.sortButton.visibility = View.GONE
         }
 
-        val files = listFiles(currentDirectory)
-        val adapter = FileAdapter()
-
-        binding.files.addItemDecoration(
-            MaterialDividerItemDecoration(
-                requireContext(),
-                DividerItemDecoration.VERTICAL
-            ).apply {
-                dividerInsetStart = 24
-                dividerInsetEnd = 24
-            }
-        )
-        binding.files.adapter = adapter
-        adapter.setFiles(currentDirectory, files)
+        binding.files.adapter =
+            FileAdapter().apply { setFiles(currentDirectory, listFiles(currentDirectory)) }
 
         isCancelable = false
-
         return binding.root
     }
 
@@ -252,33 +265,6 @@ class FilePickerDialogFragment(
                 }
             )
         )
-    }
-
-    private fun showSortingMenu(view: View) {
-        val popupMenu = PopupMenu(requireContext(), view)
-        popupMenu.menuInflater.inflate(R.menu.sort_menu, popupMenu.menu)
-
-        popupMenu.setOnMenuItemClickListener { menuItem ->
-            options.sortBy = when (menuItem.itemId) {
-                R.id.sort_name_asc -> SortBy.NAME_ASC
-
-                R.id.sort_name_desc -> SortBy.NAME_DESC
-
-                R.id.sort_size_asc -> SortBy.SIZE_ASC
-
-                R.id.sort_size_desc -> SortBy.SIZE_DESC
-
-                R.id.sort_date_asc -> SortBy.DATE_MODIFIED_ASC
-
-                R.id.sort_date_desc -> SortBy.DATE_MODIFIED_DESC
-
-                else -> SortBy.NAME_ASC
-            }
-            refreshFiles()
-            return@setOnMenuItemClickListener true
-        }
-
-        popupMenu.show()
     }
 
     private fun refreshFiles() {

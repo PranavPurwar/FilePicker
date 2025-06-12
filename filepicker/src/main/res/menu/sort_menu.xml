@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/sort_name_asc"
-        android:title="@string/sort_name_asc" />
-    <item
-        android:id="@+id/sort_name_desc"
-        android:title="@string/sort_name_desc" />
-    <item
-        android:id="@+id/sort_size_asc"
-        android:title="@string/sort_size_asc" />
-    <item
-        android:id="@+id/sort_size_desc"
-        android:title="@string/sort_size_desc" />
-    <item
-        android:id="@+id/sort_date_asc"
-        android:title="@string/sort_date_asc" />
-    <item
-        android:id="@+id/sort_date_desc"
-        android:title="@string/sort_date_desc" />
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/sort_name_asc"
+            android:checked="true"
+            android:title="@string/sort_name_asc" />
+        <item
+            android:id="@+id/sort_name_desc"
+            android:title="@string/sort_name_desc" />
+        <item
+            android:id="@+id/sort_size_asc"
+            android:title="@string/sort_size_asc" />
+        <item
+            android:id="@+id/sort_size_desc"
+            android:title="@string/sort_size_desc" />
+        <item
+            android:id="@+id/sort_date_asc"
+            android:title="@string/sort_date_asc" />
+        <item
+            android:id="@+id/sort_date_desc"
+            android:title="@string/sort_date_desc" />
+    </group>
 </menu>
 
