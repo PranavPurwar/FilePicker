@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -64,6 +65,8 @@ class FilePickerDialogFragment(
                 dismiss()
             }
         }
+
+        binding.toolbar.overflowIcon = ContextCompat.getDrawable(requireContext(), R.drawable.rounded_sort_24)
 
         binding.toolbar.title = options.title ?: when (options.selectionMode) {
             SelectionMode.FOLDER -> getString(R.string.pick_a_folder)
