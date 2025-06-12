@@ -16,6 +16,7 @@
             style="@style/Widget.FilePicker.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
             app:navigationIcon="@drawable/rounded_close_24"
             app:title="@string/pick_a_file"
             tools:subtitle="/storage/emulated/0/Download" />
