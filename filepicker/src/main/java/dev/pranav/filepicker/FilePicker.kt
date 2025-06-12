@@ -75,13 +75,11 @@ class FilePickerDialogFragment(
             val selectedFiles = (binding.files.adapter as FileAdapter).getSelectedFiles()
             if (selectedFiles.isEmpty()) {
                 Toast.makeText(
-                    requireContext(),
-                    when (options.selectionMode) {
+                    requireContext(), when (options.selectionMode) {
                         SelectionMode.FOLDER -> getString(R.string.no_folder_selected)
                         SelectionMode.BOTH -> getString(R.string.no_item_selected)
                         SelectionMode.FILE -> getString(R.string.no_file_selected)
-                    },
-                    Toast.LENGTH_SHORT
+                    }, Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
             }
@@ -166,15 +164,11 @@ class FilePickerDialogFragment(
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.setOnKeyListener { dialog, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK
-                && event.action == KeyEvent.ACTION_UP
-            ) {
+        dialog.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                 if (currentDirectory.parentFile?.canRead() != true) {
                     Toast.makeText(
-                        requireContext(),
-                        "Cannot read parent directory",
-                        Toast.LENGTH_SHORT
+                        requireContext(), "Cannot read parent directory", Toast.LENGTH_SHORT
                     ).show()
                 } else {
                     val parentDir = currentDirectory.parentFile ?: return@setOnKeyListener false
@@ -211,14 +205,11 @@ class FilePickerDialogFragment(
             }
         } else {
             if (ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                    requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE
                 ) == android.content.pm.PackageManager.PERMISSION_GRANTED
             ) return
             ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                0
+                requireActivity(), arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 0
             )
         }
     }
