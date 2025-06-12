@@ -21,13 +21,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val dialog = FilePickerDialogFragment(
-            FilePickerOptions()
-                .setSelectionMode(SelectionMode.BOTH)
-                .setExtensions(arrayOf("jpg", "png", "pdf", "txt"))
-                .setTitle("Select Files")
-                .setInitialDirectory("/storage/emulated/0/Download")
-                .setMultipleSelection(true)
-                .setShowSortOption(true),
+            FilePickerOptions().apply {
+                selectionMode = SelectionMode.BOTH
+                extensions = arrayOf("jpg", "png", "pdf", "txt")
+                title = "Select Files"
+                initialDirectory = "/storage/emulated/0/Download"
+                multipleSelection = true
+            },
             object : FilePickerCallback() {
                 override fun onFileSelected(file: File) {
                     super.onFileSelected(file)

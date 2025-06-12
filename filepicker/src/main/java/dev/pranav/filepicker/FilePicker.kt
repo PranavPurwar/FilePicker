@@ -259,45 +259,23 @@ class FilePickerDialogFragment(
         popupMenu.menuInflater.inflate(R.menu.sort_menu, popupMenu.menu)
 
         popupMenu.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.sort_name_asc -> {
-                    options.sortBy = SortBy.NAME_ASC
-                    refreshFiles()
-                    true
-                }
+            options.sortBy = when (menuItem.itemId) {
+                R.id.sort_name_asc -> SortBy.NAME_ASC
 
-                R.id.sort_name_desc -> {
-                    options.sortBy = SortBy.NAME_DESC
-                    refreshFiles()
-                    true
-                }
+                R.id.sort_name_desc -> SortBy.NAME_DESC
 
-                R.id.sort_size_asc -> {
-                    options.sortBy = SortBy.SIZE_ASC
-                    refreshFiles()
-                    true
-                }
+                R.id.sort_size_asc -> SortBy.SIZE_ASC
 
-                R.id.sort_size_desc -> {
-                    options.sortBy = SortBy.SIZE_DESC
-                    refreshFiles()
-                    true
-                }
+                R.id.sort_size_desc -> SortBy.SIZE_DESC
 
-                R.id.sort_date_asc -> {
-                    options.sortBy = SortBy.DATE_MODIFIED_ASC
-                    refreshFiles()
-                    true
-                }
+                R.id.sort_date_asc -> SortBy.DATE_MODIFIED_ASC
 
-                R.id.sort_date_desc -> {
-                    options.sortBy = SortBy.DATE_MODIFIED_DESC
-                    refreshFiles()
-                    true
-                }
+                R.id.sort_date_desc -> SortBy.DATE_MODIFIED_DESC
 
-                else -> false
+                else -> SortBy.NAME_ASC
             }
+            refreshFiles()
+            return@setOnMenuItemClickListener true
         }
 
         popupMenu.show()
