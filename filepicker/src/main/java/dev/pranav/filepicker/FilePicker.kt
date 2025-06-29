@@ -403,12 +403,13 @@ class FilePickerDialogFragment(
                 currentFile?.let { file ->
                     binding.checkbox.setOnCheckedChangeListener(null)
                     binding.checkbox.isChecked = file in selectedFiles
-                    binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
+                    binding.root.setOnClickListener {
                         if (isChecked) {
                             updateSelection(file)
                         } else if (file in selectedFiles) {
                             updateSelection(file)
                         }
+                        binding.checkbox.isChecked = !isChecked
                     }
                 }
             }
