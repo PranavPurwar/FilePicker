@@ -39,4 +39,16 @@ class FilePickerOptions {
     var sortBy = SortBy.NAME_ASC
     var showSortOption = true
     var initialDirectory: String? = null
+    
+    private var timeFormat: String = "dd-MM-yyyy"
+    
+    fun setTimeFormat(format: String): FilePickerOptions {
+        this.timeFormat = format
+        return this
+    }
+    
+    fun getTimeFormat(): String {
+        return timeFormat
+    }
+    
 }
