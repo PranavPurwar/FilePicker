@@ -4,21 +4,20 @@ A modern, lightweight, and easy-to-use file picker library for Android applicati
 
 [![](https://jitpack.io/v/PranavPurwar/FilePicker.svg)](https://jitpack.io/#PranavPurwar/FilePicker)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Platform](https://img.shields.io/badge/platform-Android-green.svg)](https://www.android.com)
 
 ## Features
 
-- 🔍 **Easy File Browsing**: Navigate through device storage with a clean, intuitive interface
-- 📁 **Folder Selection**: Select folders or individual files based on your needs
-- 🗂️ **Multiple Selection**: Choose multiple files and/or folders at once
-- 🔧 **File Filtering**: Filter files by extension to show only relevant content
-- 🧩 **Material 3 Expressive Design**: Modern UI consistent with Material Design guidelines
-- 🔒 **Permission Handling**: Automatic handling of storage permission requests
-- 🎨 **Customizable**: Easily customize the appearance to match your app's theme
-- 📱 **Edge-to-Edge Support**: Full support for modern Android edge-to-edge displays
-- 📦 **Lightweight**: Minimal dependencies and small APK size
+- **Easy File Browsing**: Navigate through device storage with a clean, intuitive interface
+- **Folder Selection**: Select folders or individual files based on your needs
+- **Multiple Selection**: Choose multiple files and/or folders at once
+- **File Filtering**: Filter files by extension to show only relevant content
+- **Material 3 Expressive Design**: Modern UI consistent with Material Design guidelines
+- **Permission Handling**: Automatic handling of storage permission requests
+- **Customizable**: Easily customize the appearance to match your app's theme
+- **Edge-to-Edge Support**: Full support for modern Android edge-to-edge displays
+- **Lightweight**: Minimal dependencies and small APK size
 - Extensive sorting options
-- Back Press Handling
+- Predictive Back Gestures
 
 ## Screenshots
 
@@ -56,7 +55,7 @@ repositories {
 
 ```gradle
 dependencies {
-    implementation 'com.github.PranavPurwar:filepicker:869c18f9e4'
+    implementation 'com.github.PranavPurwar:filepicker:1.0.0'
 }
 ```
 
@@ -64,7 +63,7 @@ Or for Gradle Kotlin DSL:
 
 ```kotlin
 dependencies {
-    implementation("com.github.PranavPurwar:filepicker:869c18f9e4")
+    implementation("com.github.PranavPurwar:filepicker:1.1.0")
 }
 ```
 
@@ -217,4 +216,4 @@ Created with ❤️ by [Pranav](https://github.com/PranavPurwar).
 
 If you find this project helpful, consider supporting it by donating via PayPal:
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/pranavpurwar)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://PranavPurwar.github.io/donate.html)
