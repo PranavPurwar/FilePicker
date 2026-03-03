@@ -261,6 +261,20 @@ class FilePickerDialogFragment(
 
         private val visibleViewHolders = mutableSetOf<FileViewHolder>()
 
+        private val dateFormatter: SimpleDateFormat by lazy {
+          val format = try {
+          options.getTimeFormat()
+           } catch (e: Exception) {
+              "dd-MM-yyyy"
+          }
+
+         try {
+            SimpleDateFormat(format, Locale.getDefault())
+          } catch (e: IllegalArgumentException) {
+            SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+          }
+       }
+
         @SuppressLint("NotifyDataSetChanged")
         fun setFiles(root: File, files: List<File>) {
             this.files.clear()
@@ -343,14 +357,7 @@ class FilePickerDialogFragment(
 
                     binding.name.text = file.name
 
-                   val format = try {
-                        options.getTimeFormat()
-                    } catch (e: Exception) {
-                      "dd-MM-yyyy"
-                  }
-
-                  val sdf = SimpleDateFormat(format, Locale.getDefault())
-                  val timeText = sdf.format(Date(file.lastModified()))
+                  val timeText = dateFormatter.format(Date(file.lastModified()))
 
                   binding.details.text = if (file.isFile) {
                     "$timeText | ${getSize(file)}"
@@ -438,7 +445,7 @@ class FilePickerDialogFragment(
             val units = arrayOf("B", "KiB", "MiB", "GiB", "TiB")
             var unit = 0
             var sizeD = size.toDouble()
-            while (sizeD > 1024 && unit < units.size) {
+            while (sizeD >= 1024 && unit < units.size - 1) {
                 sizeD /= 1024
                 unit++
             }
