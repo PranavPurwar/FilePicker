@@ -342,12 +342,21 @@ class FilePickerDialogFragment(
                     }
 
                     binding.name.text = file.name
-                    binding.details.text = SimpleDateFormat(
-                        "dd-MM-yyyy", Locale.getDefault()
-                    ).format(Date(file.lastModified()))
 
-                    if (file.isFile) binding.details.text =
-                        binding.details.text.toString() + " | " + getSize(file)
+                   val format = try {
+                        options.getTimeFormat()
+                    } catch (e: Exception) {
+                      "dd-MM-yyyy"
+                  }
+
+                  val sdf = SimpleDateFormat(format, Locale.getDefault())
+                  val timeText = sdf.format(Date(file.lastModified()))
+
+                  binding.details.text = if (file.isFile) {
+                    "$timeText | ${getSize(file)}"
+                  } else {
+                     timeText
+                  }
 
                     // Set checkbox visibility based on selection mode
                     when (options.selectionMode) {

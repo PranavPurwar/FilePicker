@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val dialog = FilePickerDialogFragment(
-            FilePickerOptions().apply {
+            FilePickerOptions().setTimeFormat("dd-MM-yyyy hh:mm a").apply {
                 selectionMode = SelectionMode.BOTH
                 extensions = arrayOf("jpg", "png", "pdf", "txt")
                 title = "Select Files"
