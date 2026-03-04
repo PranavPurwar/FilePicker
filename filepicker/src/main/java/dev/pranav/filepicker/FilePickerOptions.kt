@@ -43,7 +43,9 @@ class FilePickerOptions {
     private var timeFormat: String = "dd-MM-yyyy"
     
     fun setTimeFormat(format: String): FilePickerOptions {
+        if (format.isNotBlank()) {
         this.timeFormat = format
+        }
         return this
     }
     
